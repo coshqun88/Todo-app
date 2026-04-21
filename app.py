@@ -8,7 +8,7 @@ CORS(app)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 BIZNES_MELUMATI = """
-Ad: Leyla Restoran
+Ad: Firuzə Restoran
 Unvan: Neftciler prospekti 45, Baki
 Telefon: +994 12 555 01 23
 Is saatlari: Her gun 10:00 - 23:00
