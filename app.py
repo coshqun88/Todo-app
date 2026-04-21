@@ -3,7 +3,7 @@ import os
 import requests
 
 app = Flask(__name__)
-
+CORS(app)
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 BIZNES_MELUMATI = """
