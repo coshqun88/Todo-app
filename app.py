@@ -14,15 +14,15 @@ Telefon: +994 12 555 01 23
 Is saatlari: Her gun 10:00 - 23:00
 
 MENYU:
-- Xengel: 8 AZN
-- Piti: 12 AZN (en populyar!)
-- Qutab etli: 4 AZN
-- Qutab goyertili: 4 AZN
-- Sislik: 18 AZN
-- Kuftebozbas: 10 AZN
-- Dovletabadi: 14 AZN
-- Seker coreyti: 3 AZN
-- Cay desti: 5 AZN
+- Xəngəl: 8 AZN
+- Piti: 12 AZN (ən populyar!)
+- Qutab ətli: 4 AZN
+- Qutab göyərtili: 4 AZN
+- Kabab: 18 AZN
+- Küftəbozbaş: 10 AZN
+- Katlet çörək: 14 AZN
+- Şəkər çörəyi: 3 AZN
+- Çay dəzgahı: 5 AZN
 
 CATDIRILMA:
 - Baki daxilinde catdirilma var
