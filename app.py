@@ -55,7 +55,7 @@ RESTORAN HAQQINDA MELUMAT:
 
 @app.route("/", methods=["GET"])
 def home():
-    return send_file("test.html")
+    return send_file("bot-test.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
