@@ -82,7 +82,7 @@ def chat():
         )
 
         result = response.json()
-        bot_reply = result["choices"][0]["message"]["content"]
+        bot_reply = result.get("choices", [{}])[0].get("message", {}).get("content", str(result))
 
         return jsonify({"reply": bot_reply, "status": "ok"})
 
