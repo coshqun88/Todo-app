@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
 import requests
@@ -55,7 +55,7 @@ RESTORAN HAQQINDA MELUMAT:
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Leyla Restoran Bot isleyir! ✅"
+    return send_file("test.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
