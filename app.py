@@ -1,67 +1,59 @@
 from flask import Flask, request, jsonify
-from anthropic import Anthropic
 import os
+import requests
 
 app = Flask(__name__)
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-# Biznes məlumatları - bunu müştəriyə görə dəyişirsiniz
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+
 BIZNES_MELUMATI = """
 Ad: Leyla Restoran
-Ünvan: Neftçilər prospekti 45, Bakı
+Unvan: Neftciler prospekti 45, Baki
 Telefon: +994 12 555 01 23
-WhatsApp: +994 50 555 01 23
-İş saatları: Hər gün 10:00 - 23:00 (bayram günlərində də açıq)
+Is saatlari: Her gun 10:00 - 23:00
 
-MENYU VƏ QİYMƏTLƏR:
-- Xəngəl: 8 AZN
-- Piti: 12 AZN (ən populyar!)
-- Qutab ətli: 4 AZN
-- Qutab göyərtili: 4 AZN
-- Şişlik: 18 AZN
-- Küftəbozbaş: 10 AZN
-- Dövlətabadı: 14 AZN
-- Şəkər çörəyi: 3 AZN
-- Çay dəsti: 5 AZN
-- Müxtəlif salatlar: 5-8 AZN
+MENYU:
+- Xengel: 8 AZN
+- Piti: 12 AZN (en populyar!)
+- Qutab etli: 4 AZN
+- Qutab goyertili: 4 AZN
+- Sislik: 18 AZN
+- Kuftebozbas: 10 AZN
+- Dovletabadi: 14 AZN
+- Seker coreyti: 3 AZN
+- Cay desti: 5 AZN
 
-ÇATDIRILMA:
-- Bakı daxilində çatdırılma var
-- Minimum sifariş: 15 AZN
-- Çatdırılma haqqı: 3 AZN
-- Müddət: 30-45 dəqiqə
-- Sifariş üçün: +994 12 555 01 23
+CATDIRILMA:
+- Baki daxilinde catdirilma var
+- Minimum sifaris: 15 AZN
+- Catdirilma haggi: 3 AZN
+- Muddet: 30-45 deqiqe
 
 REZERVASIYA:
-- Masa rezervasiyası üçün zəng edin: +994 12 555 01 23
-- Ən azı 2 saat əvvəl bildirin
-- Böyük qrup üçün (10+ nəfər) 1 gün əvvəl bildirin
+- Telefon: +994 12 555 01 23
+- En azi 2 saat evvel bildirin
 
-ƏLAVƏ MƏLUMAT:
+ELAVE:
 - Pulsuz WiFi var
 - Pulsuz parkinq var
-- Vegetarian seçimlər mövcuddur
-- Uşaq menyu var
-- Korporativ sifarişlər qəbul edilir
 """
 
-SISTEM_PROMPTU = f"""Sən "Leyla Restoran"ın mehriban və peşəkar müştəri xidməti assistentisən.
+SISTEM_PROMPTU = f"""Sen "Leyla Restoran"in mehriban musteri xidmeti assistentisen.
 
 QAYDALAR:
-1. HƏMİŞƏ Azərbaycan dilində cavab ver
-2. Qısa və aydın ol (maksimum 3-4 cümlə)
-3. Emoji istifadə et - mehriban görünüş üçün
-4. Yalnız aşağıdakı məlumatlar əsasında cavab ver
-5. Bilmədiyini soruşsalar telefon nömrəsini ver
-6. Rezervasiya və ya sifariş üçün həmişə telefona yönləndir
+1. HEMISE Azerbaycan dilinde cavab ver
+2. Qisa ve aydin ol (maksimum 3-4 cumle)
+3. Emoji istifade et
+4. Yalniz asagidaki melumatlar esasinda cavab ver
+5. Bilmediyini sorusarlarsa telefon nomresini ver
 
-RESTORAN HAQQINDA MƏLUMAT:
+RESTORAN HAQQINDA MELUMAT:
 {BIZNES_MELUMATI}
 """
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Leyla Restoran Bot işləyir! ✅"
+    return "Leyla Restoran Bot isleyir! ✅"
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -70,58 +62,31 @@ def chat():
         user_message = data.get("message", "")
 
         if not user_message:
-            return jsonify({"error": "Mesaj boşdur"}), 400
+            return jsonify({"error": "Mesaj boshdur"}), 400
 
-        response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=300,
-            system=SISTEM_PROMPTU,
-            messages=[
-                {"role": "user", "content": user_message}
-            ]
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "anthropic/claude-haiku-4-5",
+                "max_tokens": 300,
+                "messages": [
+                    {"role": "system", "content": SISTEM_PROMPTU},
+                    {"role": "user", "content": user_message}
+                ]
+            }
         )
 
-        bot_reply = response.content[0].text
+        result = response.json()
+        bot_reply = result["choices"][0]["message"]["content"]
 
-        return jsonify({
-            "reply": bot_reply,
-            "status": "ok"
-        })
+        return jsonify({"reply": bot_reply, "status": "ok"})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-# WhatsApp inteqrasiyası üçün (Twilio)
-@app.route("/whatsapp", methods=["POST"])
-def whatsapp():
-    try:
-        incoming_msg = request.form.get("Body", "")
-        sender = request.form.get("From", "")
-
-        if not incoming_msg:
-            return "", 200
-
-        response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=300,
-            system=SISTEM_PROMPTU,
-            messages=[
-                {"role": "user", "content": incoming_msg}
-            ]
-        )
-
-        bot_reply = response.content[0].text
-
-        # Twilio XML cavabı
-        twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Message>{bot_reply}</Message>
-</Response>"""
-
-        return twiml, 200, {"Content-Type": "text/xml"}
-
-    except Exception as e:
-        return str(e), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
