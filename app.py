@@ -87,7 +87,7 @@ def chat():
                 "Content-Type": "application/json"
             },
             json={
-                "model": "openai/gpt-4o-mini",
+                "model": "anthropic/claude-sonnet-4-5",
                 "max_tokens": 300,
                 "messages": [
                     {"role": "system", "content": SISTEM_PROMPTU},
