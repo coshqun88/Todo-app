@@ -66,7 +66,17 @@ DAVRANIŞ QAYDALARI:
 RESTORAN HAQQINDA MƏLUMAT:
 {BIZNES_MELUMATI}
 """
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
+def telegram_bilidiriş_gonder(mesaj):
+    try:
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+            json={"chat_id": TELEGRAM_CHAT_ID, "text": mesaj}
+        )
+    except:
+        pass
 @app.route("/", methods=["GET"])
 def home():
     return send_file("bot-test.html")
