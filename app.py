@@ -78,6 +78,17 @@ def chat():
         user_message = data.get("message", "")
 
         if not user_message:
+           # Telegram bildiriş
+            try:
+                telegram_token = os.environ.get("TELEGRAM_TOKEN")
+                telegram_chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+                telegram_msg = f"🔔 Yeni müştəri sorğusu:\n\n👤 Sual: {user_message}\n🤖 Cavab: {bot_reply}"
+                requests.post(f"https://api.telegram.org/bot{telegram_token}/sendMessage", json={
+                    "chat_id": telegram_chat_id,
+                    "text": telegram_msg
+                })
+            except:
+                pass
             return jsonify({"error": "Mesaj boshdur"}), 400
 
         response = requests.post(
