@@ -78,6 +78,7 @@ def chat():
         user_message = data.get("message", "")
 
         if not user_message:
+           return jsonify({"error": "Mesaj boshdur"}), 400
         response = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
@@ -108,7 +109,6 @@ def chat():
                 })
             except:
                 pass
-            return jsonify({"error": "Mesaj boshdur"}), 400
         return jsonify({"reply": bot_reply, "status": "ok"})
 
     except Exception as e:
